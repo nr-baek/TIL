@@ -108,15 +108,35 @@ float가 적용된 요소의 높이까지도 읽어내는 body태그의 그 특�
 마치 화면크기를 줄여도 온전히 모든 콘텐츠를 보여주는 body태그같다.  
 body태그가 갖고있는 그러한 특성을 container에 적용하여 float문제를 해결한 것이다.  
 
-### 바디태그가 가진 BFC(Block Formatting Context)의 특성
+### body태그가 가진 BFC(Block Formatting Context)의 특성
 
 Block Formatting Context는 block요소가 그려질 수 있는 환경적인 부분을 담당하는 내부로직이다.  
 body태그는 최상위 요소로서 Block Formatting Context이다.  
 그런데 어떠한 요소에 `overflow`속성을 넣으면 새로운 Block Formatting Context를 만들어 넣은것과 같다.  
-**`overflow`속성을 갖은 요소는 새로운 Block Formatting Context를 갖게 되어 독립적이게 된다.**  
+**`overflow`속성을 갖은 요소는 새로운 독립적인 문서가 시작된다.**  
 
 ![overflow_BFC](https://images.velog.io/images/ursr0706/post/5dc0f0f1-9d94-494f-8bba-a65a62bf31a3/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202020-07-20%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%209.00.53.png)
 
 새로운 Block Formatting Context가 되면서 별도의 레이어를 갖게 됐다고 봐도 된다.  
 완전히 독립이 되어 별개의 영역이므로 float을 clear하지 않아도 `overflow`속성을 갖은 부모요소는 자식요소가 float되어도 높이값을 갖을 수 있으며, 다른 영역에 있는 요소와 겹치지 않게 된다.  
 따라서 float를 사용할 때 부모요소에 `overflow`속성을 줌으로써 전혀 다른 영역으로 구분되게 해주기 때문에 유용하게 쓸 수 있다.
+
+## 마진 병합 현상 해결에 쓰이는 overflow속성
+
+[이전 글 - 마진 병합 현상에 대해 알아보기](https://github.com/nr-baek/TIL/blob/master/HtmlAndCss/Margin_Collapsing.md)
+
+![H모양의 결과](https://images.velog.io/images/ursr0706/post/4b61a8cd-b155-45a5-b19a-735bd87f6702/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202020-07-19%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2011.09.20.png)
+
+![부모자식의 마진 병합그림](https://images.velog.io/images/ursr0706/post/e9ee3ec2-be38-4353-a122-e97ed9684713/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202020-07-19%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2010.52.25.png)  
+
+이렇게 자식요소인 A,B박스에 각각 50px의 마진을 줬을 때 부모자식간의 마진 겹침 현상으로 A박스의 위쪽 여백과 B박스의 아랫쪽 여백이 부모요소의 마진으로 표현되어 마치 자식요소의 마진값이 표현되지 않은 것 처럼 보인다.  
+이걸 해결해 줄 수 있는게 `overflow: hidden;`속성이다.  
+
+![overflow를 이용한 마진병합제거](https://images.velog.io/images/ursr0706/post/c112150b-9dad-42f1-946c-d9775e351810/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202020-07-19%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%201.26.50.png)
+
+부모요소인 container에 `overflow: hidden;`속성이 적용되면서 새로운 BFC(Block Formatting Context)가 만들어졌기 때문에 자식요소의 마진이 모두 표현된 것이다.  
+물론 부모요소에 부여했기 때문에 자식요소인 A와 B의 병합현상은 그대로 유지되면서 부모요소인 컨테이너와 박스A,B간의 병합현상만 해결할 수 있다.  
+(만약 부모자식간, 형제간 모두 마진 병합 현상을 제거하려면 overflow를 이용하는 것 보다는 display속성의 값을 inline-block으로 입력하는게 좀 더 편하다.)
+
+> overflow 참고사이트 - [MDN - overflow](https://developer.mozilla.org/ko/docs/Web/Guide/CSS/Block_formatting_context)  
+> 참고영상 - [오버플로우 overflow | 코딩가나다 | 빔캠프](https://youtu.be/O-n1EjDEuIc)
